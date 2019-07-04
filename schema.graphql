@@ -1,0 +1,171 @@
+enum AddressType {
+  CUSTOMER
+  STAFF
+  SHIPPING
+  BILLNG
+}
+
+enum DiscountCodeType {
+  GIFT_CARD
+  PROMO_CODE
+  REFUND
+}
+
+enum Gender {
+  MALE
+  FEMALE
+}
+
+enum OrderStatus {
+  RECIEVED
+  PROCESSING
+  ACCEPTED
+  IN_TRANSIT
+  DELIVERED
+}
+
+enum UserType {
+  CUSTOMER
+  STAFF
+}
+
+type Address {
+  id: ID! @id
+  firstName: String
+  lastName: String
+  address: String!
+  type: AddressType!
+  country: String!
+  phoneNumber: String
+  state: String!
+  city: String!
+  zipcode: String!
+  createdAt: DateTime! @createdAt
+  updatedAt: DateTime! @updatedAt
+}
+
+type Cart {
+  id: ID! @id
+  owner: User! @relation(link: INLINE)
+  items: [CartItem!]!
+  createdAt: DateTime! @createdAt
+  updatedAt: DateTime! @updatedAt
+}
+
+type CartItem {
+  id: ID! @id
+  cart: Cart! @relation(link: INLINE)
+  product: Product! @relation(link: INLINE)
+  quantity: Int!
+  total: Float!
+  createdAt: DateTime! @createdAt
+  updatedAt: DateTime! @updatedAt
+}
+
+type Category {
+  id: ID! @id
+  name: String!
+  image: Image
+  createdAt: DateTime! @createdAt
+  updatedAt: DateTime! @updatedAt
+}
+
+type DiscountCode {
+  id: ID! @id
+  amount: Float
+  percentage: Float
+  code: String!
+  type: DiscountCodeType!
+  expiresAt: DateTime!
+  createdAt: DateTime! @createdAt
+  updatedAt: DateTime! @updatedAt
+}
+
+type Image {
+  id: ID! @id
+  url: String!
+  createdAt: DateTime! @createdAt
+}
+
+type Order {
+  id: ID! @id
+  owner: User! @relation(link: INLINE)
+  items: [OrderItem!]!
+  status: OrderStatus!
+  cancelled: Boolean! @default(value: false)
+  shippingFee: Float!
+  subtotal: Float!
+  total: Float!
+  createdAt: DateTime! @createdAt
+  updatedAt: DateTime! @updatedAt
+}
+
+type OrderItem {
+  id: ID! @id
+  order: Order @relation(link: INLINE)
+  product: Product @relation(link: INLINE)
+  price: Float!
+  quantity: Int!
+  total: Float!
+  createdAt: DateTime! @createdAt
+  updatedAt: DateTime! @updatedAt
+}
+
+type Product {
+  id: ID! @id
+  name: String!
+  sku: String!
+  price: Float!
+  discountedPrice: Float!
+  gender: Gender
+  categories: [Category!]!
+  sizes: [Size!]!
+  images: [Image!]!
+  description: String!
+  reviews: [Review!]!
+  createdAt: DateTime! @createdAt
+  updatedAt: DateTime! @updatedAt
+}
+
+type Review {
+  id: ID! @id
+  owner: User! @relation(link: INLINE)
+  product: Product! @relation(link: INLINE)
+  comment: String!
+  rating: Int
+  createdAt: DateTime! @createdAt
+  updatedAt: DateTime! @updatedAt
+}
+
+type SavedItem {
+  id: ID! @id
+  owner: User! @relation(link: INLINE)
+  product: Product! @relation(link: INLINE)
+  createdAt: DateTime! @createdAt
+  updatedAt: DateTime! @updatedAt
+}
+
+type Size {
+  id: ID! @id
+  size: Int!
+  createdAt: DateTime! @createdAt
+}
+
+type User {
+  id: ID! @id
+  firstName: String!
+  lastName: String!
+  email: String! @unique
+  activated: Boolean! @default(value: false)
+  country: String
+  disabled: Boolean! @default(value: false)
+  twoFactorEnabled: Boolean! @default(value: false)
+  pushNotificationEnabled: Boolean! @default(value: true)
+  type: UserType! @default(value: CUSTOMER)
+  sn: String! @unique
+  cart: Cart!
+  orders: [Order!]!
+  savedItems: [SavedItem!]!
+  createdAt: DateTime! @createdAt
+  updatedAt: DateTime! @updatedAt
+}

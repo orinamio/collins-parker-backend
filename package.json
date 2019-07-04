@@ -1,0 +1,14 @@
+{
+  "name": "collins-parker-backend",
+  "version": "1.0.0",
+  "description": "Collins Parker Backend",
+  "main": "index.js",
+  "repository": "https://github.com/orinamio/collins-parker-backend.git",
+  "author": "orinamio <orinamiolatunji@gmail.com>",
+  "license": "MIT",
+  "private": true,
+  "dependencies": {
+    "graphql-yoga": "^1.18.0",
+    "prisma-client-lib": "^1.34.0"
+  }
+}
