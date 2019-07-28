@@ -1,6 +1,7 @@
-endpoint: http://localhost:4466
+#endpoint: http://localhost:4466
+endpoint: https://eu1.prisma.sh/orinami-olatunji-e12313/collins-parker-backend/dev
 datamodel: datamodel.prisma
-secret: ${env:PRISMA_MANAGEMENT_API_SECRET}
+# secret: ${env:PRISMA_MANAGEMENT_API_SECRET}
 generate:
   - generator: javascript-client
-    output: ./generated/prisma-client/
+    output: generated/prisma-client/

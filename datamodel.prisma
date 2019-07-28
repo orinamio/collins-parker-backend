@@ -9,6 +9,7 @@ enum DiscountCodeType {
   GIFT_CARD
   PROMO_CODE
   REFUND
+  GIVEAWAY
 }
 
 enum Gender {
@@ -24,7 +25,7 @@ enum OrderStatus {
   DELIVERED
 }
 
-enum UserType {
+enum Role {
   CUSTOMER
   STAFF
 }
@@ -40,6 +41,7 @@ type Address {
   state: String!
   city: String!
   zipcode: String!
+  owner: User! @relation(link: INLINE)
   createdAt: DateTime! @createdAt
   updatedAt: DateTime! @updatedAt
 }
@@ -74,8 +76,9 @@ type DiscountCode {
   id: ID! @id
   amount: Float
   percentage: Float
-  code: String!
+  code: String! @unique
   type: DiscountCodeType!
+  active: Boolean! @default(value: true)
   expiresAt: DateTime!
   createdAt: DateTime! @createdAt
   updatedAt: DateTime! @updatedAt
@@ -116,13 +119,15 @@ type Product {
   name: String!
   sku: String!
   price: Float!
-  discountedPrice: Float!
+  discountedPrice: Float
+  brand: Brand! @relation(link: INLINE)
   gender: Gender
-  categories: [Category!]!
+  category: Category! @relation(link: INLINE)
   sizes: [Size!]!
   images: [Image!]!
   description: String!
   reviews: [Review!]!
+  shippingFee: Float @default(value: 0)
   createdAt: DateTime! @createdAt
   updatedAt: DateTime! @updatedAt
 }
@@ -147,7 +152,13 @@ type SavedItem {
 
 type Size {
   id: ID! @id
-  size: Int!
+  size: String!
+  createdAt: DateTime! @createdAt
+}
+
+type Brand {
+  id: ID! @id
+  name: String!
   createdAt: DateTime! @createdAt
 }
 
@@ -161,12 +172,13 @@ type User {
   disabled: Boolean! @default(value: false)
   twoFactorEnabled: Boolean! @default(value: false)
   pushNotificationEnabled: Boolean! @default(value: true)
-  type: UserType! @default(value: CUSTOMER)
+  role: Role! @default(value: CUSTOMER)
   sn: String! @unique
   password: String!
   cart: Cart!
   orders: [Order!]!
   savedItems: [SavedItem!]!
+  addresses: [Address!]!
   createdAt: DateTime! @createdAt
   updatedAt: DateTime! @updatedAt
 }

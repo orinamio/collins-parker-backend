@@ -1,3 +1,84 @@
+type Query {
+  categories: [Category!]!
+  cart: Cart
+  user(id: ID): User
+  search(
+    searchString: String!
+    skip: Int
+    after: String
+    before: String
+    first: Int
+    last: Int
+  ): ProductConnection
+  filter(
+    orderBy: String
+    gender: String
+    productType: String
+    size: String
+    price: String
+    skip: Int
+    after: String
+    before: String
+    first: Int
+    last: Int
+  ): ProductConnection
+  similarProducts(categoryId: String!): [Product!]!
+  products(
+    skip: Int
+    after: String
+    before: String
+    first: Int
+    last: Int
+  ): ProductConnection
+  product(id: ID!): Product
+  promoCodes: [DiscountCode!]!
+  discountCode(code: String!): DiscountCode
+  savedItems: [SavedItem!]!
+  orders: [Order!]!
+}
+
+type Mutation {
+  login(email: String!, password: String!): AuthPayload
+  signup(
+    firstName: String!
+    lastName: String!
+    email: String!
+    password: String!
+  ): AuthPayload
+  addToCart(productId: ID!, quantity: Int!): CartItem
+  removeItemFromCart(cartItemId: ID!): SuccessPayload
+  createOrder: Order
+  cancelOrder(id: ID!): Order
+  updateUser(firstName: String, lastName: String): User
+  deactivateUser(id: ID!): User
+  createAddress(
+    firstName: String
+    lastName: String
+    address: String!
+    type: AddressType!
+    country: String!
+    phoneNumber: String
+    state: String!
+    city: String!
+    zipcode: String!
+  ): Address
+  updateAddress(
+    firstName: String
+    lastName: String
+    address: String
+    type: AddressType
+    country: String
+    phoneNumber: String
+    state: String
+    city: String
+    zipcode: String
+  ): Address
+  deleteAddress(id: ID!): Address
+  saveItem(productId: ID!): SavedItem
+  deleteSavedItem(id: ID!): SavedItem
+  createReview(productId: ID!, comment: String!, rating: Int): Review
+}
+
 enum AddressType {
   CUSTOMER
   STAFF
@@ -9,6 +90,7 @@ enum DiscountCodeType {
   GIFT_CARD
   PROMO_CODE
   REFUND
+  GIVEAWAY
 }
 
 enum Gender {
@@ -29,8 +111,17 @@ enum UserType {
   STAFF
 }
 
+type AuthPayload {
+  token: String
+  user: User
+}
+
+type SuccessPayload {
+  success: Boolean!
+}
+
 type Address {
-  id: ID! @id
+  id: ID!
   firstName: String
   lastName: String
   address: String!
@@ -40,132 +131,139 @@ type Address {
   state: String!
   city: String!
   zipcode: String!
-  createdAt: DateTime! @createdAt
-  updatedAt: DateTime! @updatedAt
+  owner: User!
 }
 
 type Cart {
-  id: ID! @id
-  owner: User! @relation(link: INLINE)
+  id: ID!
+  owner: User!
   items: [CartItem!]!
-  createdAt: DateTime! @createdAt
-  updatedAt: DateTime! @updatedAt
 }
 
 type CartItem {
-  id: ID! @id
-  cart: Cart! @relation(link: INLINE)
-  product: Product! @relation(link: INLINE)
+  id: ID!
+  cart: Cart!
+  product: Product!
   quantity: Int!
   total: Float!
-  createdAt: DateTime! @createdAt
-  updatedAt: DateTime! @updatedAt
 }
 
 type Category {
-  id: ID! @id
+  id: ID!
   name: String!
   image: Image
-  createdAt: DateTime! @createdAt
-  updatedAt: DateTime! @updatedAt
 }
 
 type DiscountCode {
-  id: ID! @id
+  id: ID!
   amount: Float
   percentage: Float
   code: String!
+  active: Boolean!
   type: DiscountCodeType!
-  expiresAt: DateTime!
-  createdAt: DateTime! @createdAt
-  updatedAt: DateTime! @updatedAt
 }
 
 type Image {
-  id: ID! @id
+  id: ID!
   url: String!
-  createdAt: DateTime! @createdAt
 }
 
 type Order {
-  id: ID! @id
-  owner: User! @relation(link: INLINE)
+  id: ID!
+  owner: User!
   items: [OrderItem!]!
-  status: OrderStatus!
-  cancelled: Boolean! @default(value: false)
+  status: OrderStatus
+  cancelled: Boolean!
   shippingFee: Float!
   subtotal: Float!
   total: Float!
-  createdAt: DateTime! @createdAt
-  updatedAt: DateTime! @updatedAt
 }
 
 type OrderItem {
-  id: ID! @id
-  order: Order @relation(link: INLINE)
-  product: Product @relation(link: INLINE)
+  id: ID!
+  order: Order
+  product: Product
   price: Float!
   quantity: Int!
   total: Float!
-  createdAt: DateTime! @createdAt
-  updatedAt: DateTime! @updatedAt
 }
 
 type Product {
-  id: ID! @id
+  id: ID!
   name: String!
   sku: String!
   price: Float!
-  discountedPrice: Float!
+  discountedPrice: Float
+  brand: Brand!
   gender: Gender
-  categories: [Category!]!
+  category: Category!
   sizes: [Size!]!
   images: [Image!]!
   description: String!
   reviews: [Review!]!
-  createdAt: DateTime! @createdAt
-  updatedAt: DateTime! @updatedAt
+  shippingFee: Float
+}
+
+type ProductConnection {
+  pageInfo: PageInfo!
+  edges: [ProductEdge]!
+  aggregate: AggregateProduct!
+}
+
+type ProductEdge {
+  node: Product!
+  cursor: String!
+}
+
+type AggregateProduct {
+  count: Int!
 }
 
 type Review {
-  id: ID! @id
-  owner: User! @relation(link: INLINE)
-  product: Product! @relation(link: INLINE)
+  id: ID!
+  owner: User!
+  product: Product!
   comment: String!
   rating: Int
-  createdAt: DateTime! @createdAt
-  updatedAt: DateTime! @updatedAt
 }
 
 type SavedItem {
-  id: ID! @id
-  owner: User! @relation(link: INLINE)
-  product: Product! @relation(link: INLINE)
-  createdAt: DateTime! @createdAt
-  updatedAt: DateTime! @updatedAt
+  id: ID!
+  owner: User!
+  product: Product!
 }
 
 type Size {
-  id: ID! @id
-  size: Int!
-  createdAt: DateTime! @createdAt
+  id: ID
+  size: String!
+}
+
+type Brand {
+  id: ID
+  name: String!
 }
 
 type User {
-  id: ID! @id
-  firstName: String!
-  lastName: String!
-  email: String! @unique
-  activated: Boolean! @default(value: false)
+  id: ID
+  firstName: String
+  lastName: String
+  email: String
+  activated: Boolean
   country: String
-  disabled: Boolean! @default(value: false)
-  twoFactorEnabled: Boolean! @default(value: false)
-  pushNotificationEnabled: Boolean! @default(value: true)
-  type: UserType! @default(value: CUSTOMER)
-  sn: String! @unique
-  cart: Cart!
+  disabled: Boolean
+  twoFactorEnabled: Boolean
+  pushNotificationEnabled: Boolean
+  type: UserType
+  sn: String!
+  cart: Cart
   orders: [Order!]!
   savedItems: [SavedItem!]!
-  createdAt: DateTime! @createdAt
-  updatedAt: DateTime! @updatedAt
+  addresses: [Address!]!
+}
+
+type PageInfo {
+  hasNextPage: Boolean!
+  hasPreviousPage: Boolean!
+  startCursor: String
+  endCursor: String
 }
