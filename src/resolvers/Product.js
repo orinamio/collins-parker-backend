@@ -11,13 +11,16 @@ module.exports = {
       .product({
         id
       })
-      .images();
+      .images({ ...args });
   },
   async reviews({ id }, args, context) {
     return await context.prisma
       .product({
         id
       })
-      .reviews();
+      .reviews({
+        first: 10,
+        ...args
+      });
   }
 };

@@ -1261,6 +1261,7 @@ type DiscountCode {
   code: String!
   type: DiscountCodeType!
   active: Boolean!
+  message: String
   expiresAt: DateTime!
   createdAt: DateTime!
   updatedAt: DateTime!
@@ -1279,6 +1280,7 @@ input DiscountCodeCreateInput {
   code: String!
   type: DiscountCodeType!
   active: Boolean
+  message: String
   expiresAt: DateTime!
 }
 
@@ -1300,6 +1302,8 @@ enum DiscountCodeOrderByInput {
   type_DESC
   active_ASC
   active_DESC
+  message_ASC
+  message_DESC
   expiresAt_ASC
   expiresAt_DESC
   createdAt_ASC
@@ -1315,6 +1319,7 @@ type DiscountCodePreviousValues {
   code: String!
   type: DiscountCodeType!
   active: Boolean!
+  message: String
   expiresAt: DateTime!
   createdAt: DateTime!
   updatedAt: DateTime!
@@ -1351,6 +1356,7 @@ input DiscountCodeUpdateInput {
   code: String
   type: DiscountCodeType
   active: Boolean
+  message: String
   expiresAt: DateTime
 }
 
@@ -1360,6 +1366,7 @@ input DiscountCodeUpdateManyMutationInput {
   code: String
   type: DiscountCodeType
   active: Boolean
+  message: String
   expiresAt: DateTime
 }
 
@@ -1414,6 +1421,20 @@ input DiscountCodeWhereInput {
   type_not_in: [DiscountCodeType!]
   active: Boolean
   active_not: Boolean
+  message: String
+  message_not: String
+  message_in: [String!]
+  message_not_in: [String!]
+  message_lt: String
+  message_lte: String
+  message_gt: String
+  message_gte: String
+  message_contains: String
+  message_not_contains: String
+  message_starts_with: String
+  message_not_starts_with: String
+  message_ends_with: String
+  message_not_ends_with: String
   expiresAt: DateTime
   expiresAt_not: DateTime
   expiresAt_in: [DateTime!]

@@ -11,6 +11,7 @@ type Query {
     last: Int
   ): ProductConnection
   filter(
+    searchString: String
     orderBy: String
     gender: String
     productType: String
@@ -63,6 +64,7 @@ type Mutation {
     zipcode: String!
   ): Address
   updateAddress(
+    id: ID!
     firstName: String
     lastName: String
     address: String
@@ -160,6 +162,8 @@ type DiscountCode {
   percentage: Float
   code: String!
   active: Boolean!
+  message: String
+  expiresAt: DateTime!
   type: DiscountCodeType!
 }
 
@@ -198,9 +202,9 @@ type Product {
   gender: Gender
   category: Category!
   sizes: [Size!]!
-  images: [Image!]!
+  images(first: Int): [Image!]!
   description: String!
-  reviews: [Review!]!
+  reviews(first: Int): [Review!]!
   shippingFee: Float
 }
 

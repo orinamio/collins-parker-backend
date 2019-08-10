@@ -23,16 +23,9 @@ async function user(parent, args, context) {
   });
 }
 
-async function search(parent, args, context) {
-  let searchString, argsObj;
-
-  searchString = args.searchString;
-  argsObj = { ...args };
-
-  delete argsObj["searchString"];
-
+async function search(parent, { searchString, ...args }, context) {
   return await context.prisma.productsConnection({
-    ...argsObj,
+    ...args,
     where: {
       OR: [
         {
@@ -52,6 +45,7 @@ async function filter(parent, args, context) {
   let orderBy, gender, productType, size, price, argsObj, AND;
 
   // assign special filter arguments to corresponding variables
+  searchString = args.searchString;
   orderBy = args.orderBy;
   gender = args.gender;
   productType = args.productType;
@@ -62,6 +56,7 @@ async function filter(parent, args, context) {
   // make a copy of argument and delete special filter arguments
   // so that defined prisma arguments for productsConnection can be sent to prisma
   argsObj = { ...args };
+  searchString && delete argsObj["searchString"];
   orderBy && delete argsObj["orderBy"];
   gender && delete argsObj["gender"];
   productType && delete argsObj["productType"];
@@ -80,6 +75,24 @@ async function filter(parent, args, context) {
       break;
   }
   argsObj = { ...argsObj, orderBy };
+
+  // searchString
+  searchString &&
+    (AND = [
+      ...AND,
+      {
+        OR: [
+          {
+            name_contains: searchString
+          },
+          {
+            brand: {
+              name_contains: searchString
+            }
+          }
+        ]
+      }
+    ]);
 
   // gender
   gender &&

@@ -79,6 +79,7 @@ type DiscountCode {
   code: String! @unique
   type: DiscountCodeType!
   active: Boolean! @default(value: true)
+  message: String
   expiresAt: DateTime!
   createdAt: DateTime! @createdAt
   updatedAt: DateTime! @updatedAt

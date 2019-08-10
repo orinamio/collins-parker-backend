@@ -824,6 +824,8 @@ export type DiscountCodeOrderByInput =
   | "type_DESC"
   | "active_ASC"
   | "active_DESC"
+  | "message_ASC"
+  | "message_DESC"
   | "expiresAt_ASC"
   | "expiresAt_DESC"
   | "createdAt_ASC"
@@ -1653,6 +1655,20 @@ export interface DiscountCodeWhereInput {
   type_not_in?: Maybe<DiscountCodeType[] | DiscountCodeType>;
   active?: Maybe<Boolean>;
   active_not?: Maybe<Boolean>;
+  message?: Maybe<String>;
+  message_not?: Maybe<String>;
+  message_in?: Maybe<String[] | String>;
+  message_not_in?: Maybe<String[] | String>;
+  message_lt?: Maybe<String>;
+  message_lte?: Maybe<String>;
+  message_gt?: Maybe<String>;
+  message_gte?: Maybe<String>;
+  message_contains?: Maybe<String>;
+  message_not_contains?: Maybe<String>;
+  message_starts_with?: Maybe<String>;
+  message_not_starts_with?: Maybe<String>;
+  message_ends_with?: Maybe<String>;
+  message_not_ends_with?: Maybe<String>;
   expiresAt?: Maybe<DateTimeInput>;
   expiresAt_not?: Maybe<DateTimeInput>;
   expiresAt_in?: Maybe<DateTimeInput[] | DateTimeInput>;
@@ -2005,6 +2021,7 @@ export interface DiscountCodeCreateInput {
   code: String;
   type: DiscountCodeType;
   active?: Maybe<Boolean>;
+  message?: Maybe<String>;
   expiresAt: DateTimeInput;
 }
 
@@ -2960,6 +2977,7 @@ export interface DiscountCodeUpdateManyMutationInput {
   code?: Maybe<String>;
   type?: Maybe<DiscountCodeType>;
   active?: Maybe<Boolean>;
+  message?: Maybe<String>;
   expiresAt?: Maybe<DateTimeInput>;
 }
 
@@ -3629,6 +3647,7 @@ export interface DiscountCodeUpdateInput {
   code?: Maybe<String>;
   type?: Maybe<DiscountCodeType>;
   active?: Maybe<Boolean>;
+  message?: Maybe<String>;
   expiresAt?: Maybe<DateTimeInput>;
 }
 
@@ -5336,6 +5355,7 @@ export interface DiscountCodePreviousValues {
   code: String;
   type: DiscountCodeType;
   active: Boolean;
+  message?: String;
   expiresAt: DateTimeOutput;
   createdAt: DateTimeOutput;
   updatedAt: DateTimeOutput;
@@ -5350,6 +5370,7 @@ export interface DiscountCodePreviousValuesPromise
   code: () => Promise<String>;
   type: () => Promise<DiscountCodeType>;
   active: () => Promise<Boolean>;
+  message: () => Promise<String>;
   expiresAt: () => Promise<DateTimeOutput>;
   createdAt: () => Promise<DateTimeOutput>;
   updatedAt: () => Promise<DateTimeOutput>;
@@ -5364,6 +5385,7 @@ export interface DiscountCodePreviousValuesSubscription
   code: () => Promise<AsyncIterator<String>>;
   type: () => Promise<AsyncIterator<DiscountCodeType>>;
   active: () => Promise<AsyncIterator<Boolean>>;
+  message: () => Promise<AsyncIterator<String>>;
   expiresAt: () => Promise<AsyncIterator<DateTimeOutput>>;
   createdAt: () => Promise<AsyncIterator<DateTimeOutput>>;
   updatedAt: () => Promise<AsyncIterator<DateTimeOutput>>;
@@ -6251,6 +6273,7 @@ export interface DiscountCode {
   code: String;
   type: DiscountCodeType;
   active: Boolean;
+  message?: String;
   expiresAt: DateTimeOutput;
   createdAt: DateTimeOutput;
   updatedAt: DateTimeOutput;
@@ -6265,6 +6288,7 @@ export interface DiscountCodePromise
   code: () => Promise<String>;
   type: () => Promise<DiscountCodeType>;
   active: () => Promise<Boolean>;
+  message: () => Promise<String>;
   expiresAt: () => Promise<DateTimeOutput>;
   createdAt: () => Promise<DateTimeOutput>;
   updatedAt: () => Promise<DateTimeOutput>;
@@ -6279,6 +6303,7 @@ export interface DiscountCodeSubscription
   code: () => Promise<AsyncIterator<String>>;
   type: () => Promise<AsyncIterator<DiscountCodeType>>;
   active: () => Promise<AsyncIterator<Boolean>>;
+  message: () => Promise<AsyncIterator<String>>;
   expiresAt: () => Promise<AsyncIterator<DateTimeOutput>>;
   createdAt: () => Promise<AsyncIterator<DateTimeOutput>>;
   updatedAt: () => Promise<AsyncIterator<DateTimeOutput>>;
@@ -6293,6 +6318,7 @@ export interface DiscountCodeNullablePromise
   code: () => Promise<String>;
   type: () => Promise<DiscountCodeType>;
   active: () => Promise<Boolean>;
+  message: () => Promise<String>;
   expiresAt: () => Promise<DateTimeOutput>;
   createdAt: () => Promise<DateTimeOutput>;
   updatedAt: () => Promise<DateTimeOutput>;
