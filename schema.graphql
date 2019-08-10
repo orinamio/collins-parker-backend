@@ -163,7 +163,7 @@ type DiscountCode {
   code: String!
   active: Boolean!
   message: String
-  expiresAt: DateTime!
+  expiresAt: String!
   type: DiscountCodeType!
 }
 
