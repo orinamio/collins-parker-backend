@@ -278,7 +278,7 @@ enum AddressType {
   CUSTOMER
   STAFF
   SHIPPING
-  BILLNG
+  BILLING
 }
 
 input AddressUpdateInput {
@@ -709,6 +709,9 @@ type Cart {
   id: ID!
   owner: User!
   items(where: CartItemWhereInput, orderBy: CartItemOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [CartItem!]
+  shippingFee: Float!
+  subtotal: Float!
+  total: Float!
   createdAt: DateTime!
   updatedAt: DateTime!
 }
@@ -723,6 +726,9 @@ input CartCreateInput {
   id: ID
   owner: UserCreateOneWithoutCartInput!
   items: CartItemCreateManyWithoutCartInput
+  shippingFee: Float
+  subtotal: Float
+  total: Float
 }
 
 input CartCreateOneWithoutItemsInput {
@@ -738,11 +744,17 @@ input CartCreateOneWithoutOwnerInput {
 input CartCreateWithoutItemsInput {
   id: ID
   owner: UserCreateOneWithoutCartInput!
+  shippingFee: Float
+  subtotal: Float
+  total: Float
 }
 
 input CartCreateWithoutOwnerInput {
   id: ID
   items: CartItemCreateManyWithoutCartInput
+  shippingFee: Float
+  subtotal: Float
+  total: Float
 }
 
 type CartEdge {
@@ -994,6 +1006,12 @@ input CartItemWhereUniqueInput {
 enum CartOrderByInput {
   id_ASC
   id_DESC
+  shippingFee_ASC
+  shippingFee_DESC
+  subtotal_ASC
+  subtotal_DESC
+  total_ASC
+  total_DESC
   createdAt_ASC
   createdAt_DESC
   updatedAt_ASC
@@ -1002,6 +1020,9 @@ enum CartOrderByInput {
 
 type CartPreviousValues {
   id: ID!
+  shippingFee: Float!
+  subtotal: Float!
+  total: Float!
   createdAt: DateTime!
   updatedAt: DateTime!
 }
@@ -1027,6 +1048,15 @@ input CartSubscriptionWhereInput {
 input CartUpdateInput {
   owner: UserUpdateOneRequiredWithoutCartInput
   items: CartItemUpdateManyWithoutCartInput
+  shippingFee: Float
+  subtotal: Float
+  total: Float
+}
+
+input CartUpdateManyMutationInput {
+  shippingFee: Float
+  subtotal: Float
+  total: Float
 }
 
 input CartUpdateOneRequiredWithoutItemsInput {
@@ -1045,10 +1075,16 @@ input CartUpdateOneRequiredWithoutOwnerInput {
 
 input CartUpdateWithoutItemsDataInput {
   owner: UserUpdateOneRequiredWithoutCartInput
+  shippingFee: Float
+  subtotal: Float
+  total: Float
 }
 
 input CartUpdateWithoutOwnerDataInput {
   items: CartItemUpdateManyWithoutCartInput
+  shippingFee: Float
+  subtotal: Float
+  total: Float
 }
 
 input CartUpsertWithoutItemsInput {
@@ -1080,6 +1116,30 @@ input CartWhereInput {
   items_every: CartItemWhereInput
   items_some: CartItemWhereInput
   items_none: CartItemWhereInput
+  shippingFee: Float
+  shippingFee_not: Float
+  shippingFee_in: [Float!]
+  shippingFee_not_in: [Float!]
+  shippingFee_lt: Float
+  shippingFee_lte: Float
+  shippingFee_gt: Float
+  shippingFee_gte: Float
+  subtotal: Float
+  subtotal_not: Float
+  subtotal_in: [Float!]
+  subtotal_not_in: [Float!]
+  subtotal_lt: Float
+  subtotal_lte: Float
+  subtotal_gt: Float
+  subtotal_gte: Float
+  total: Float
+  total_not: Float
+  total_in: [Float!]
+  total_not_in: [Float!]
+  total_lt: Float
+  total_lte: Float
+  total_gt: Float
+  total_gte: Float
   createdAt: DateTime
   createdAt_not: DateTime
   createdAt_in: [DateTime!]
@@ -1702,6 +1762,7 @@ type Mutation {
   deleteManyBrands(where: BrandWhereInput): BatchPayload!
   createCart(data: CartCreateInput!): Cart!
   updateCart(data: CartUpdateInput!, where: CartWhereUniqueInput!): Cart
+  updateManyCarts(data: CartUpdateManyMutationInput!, where: CartWhereInput): BatchPayload!
   upsertCart(where: CartWhereUniqueInput!, create: CartCreateInput!, update: CartUpdateInput!): Cart!
   deleteCart(where: CartWhereUniqueInput!): Cart
   deleteManyCarts(where: CartWhereInput): BatchPayload!
@@ -2211,7 +2272,7 @@ input OrderScalarWhereInput {
 }
 
 enum OrderStatus {
-  RECIEVED
+  RECEIVED
   PROCESSING
   ACCEPTED
   IN_TRANSIT

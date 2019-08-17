@@ -34,7 +34,7 @@ type Query {
   product(id: ID!): Product
   promoCodes: [DiscountCode!]!
   discountCode(code: String!): DiscountCode
-  savedItems: [SavedItem!]!
+  savedItems: SavedItemConnection
   orders: [Order!]!
 }
 
@@ -138,8 +138,11 @@ type Address {
 
 type Cart {
   id: ID!
-  owner: User!
+  owner: User
   items: [CartItem!]!
+  shippingFee: Float
+  subtotal: Float
+  total: Float
 }
 
 type CartItem {
@@ -198,7 +201,7 @@ type Product {
   sku: String!
   price: Float!
   discountedPrice: Float
-  brand: Brand!
+  brand: Brand
   gender: Gender
   category: Category!
   sizes: [Size!]!
@@ -235,6 +238,21 @@ type SavedItem {
   id: ID!
   owner: User!
   product: Product!
+}
+
+type SavedItemConnection {
+  pageInfo: PageInfo!
+  edges: [SavedItemEdge]!
+  aggregate: AggregateSavedItem!
+}
+
+type SavedItemEdge {
+  node: SavedItem!
+  cursor: String!
+}
+
+type AggregateSavedItem {
+  count: Int!
 }
 
 type Size {

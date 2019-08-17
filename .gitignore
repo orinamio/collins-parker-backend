@@ -62,3 +62,6 @@ typings/
 
 # local configurations
 docker-compose.yml
+
+# data exports
+export-*

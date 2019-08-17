@@ -43,6 +43,7 @@ async function login(parent, args, context, info) {
 
 async function addToCart(parent, args, context, info) {
   const userId = getUserId(context);
+
   // get user cart
   const getUserCart = await context.prisma.carts({
     where: {
@@ -51,7 +52,10 @@ async function addToCart(parent, args, context, info) {
       }
     }
   });
-  const userCartId = getUserCart[0].id;
+
+  const userCart = getUserCart[0];
+  const userCartId = userCart.id;
+
   // get product
   const product = await context.prisma.product({ id: args.productId });
   let total = product.price * args.quantity;
@@ -59,6 +63,26 @@ async function addToCart(parent, args, context, info) {
   if (product.discountedPrice) {
     total = product.discountedPrice * args.quantity;
   }
+
+  // update cart total, subtotal and shippingFee
+  let newCartTotal = userCart.total ? userCart.total : 0,
+    newCartShippingFee = userCart.shippingFee ? userCart.shippingFee : 0,
+    newCartSubtotal = userCart.subtotal ? userCart.subtotal : 0;
+
+  newCartSubtotal += total;
+  product.shippingFee && (newCartShippingFee += product.shippingFee);
+  newCartTotal = newCartSubtotal + newCartShippingFee;
+
+  await context.prisma.updateCart({
+    data: {
+      subtotal: newCartSubtotal,
+      shippingFee: newCartShippingFee,
+      total: newCartTotal
+    },
+    where: {
+      id: userCartId
+    }
+  });
 
   return await context.prisma.createCartItem({
     quantity: args.quantity,
@@ -96,13 +120,7 @@ async function removeItemFromCart(parent, args, context, info) {
 
 async function createOrder(parent, args, context, info) {
   const userId = getUserId(context);
-  let getUserCart,
-    userCartId,
-    shippingFee,
-    subtotal = 0,
-    total,
-    cartItems,
-    order;
+  let getUserCart, userCart, userCartId, cartItems, order;
 
   // get user cart id
   getUserCart = await context.prisma.carts({
@@ -112,7 +130,9 @@ async function createOrder(parent, args, context, info) {
       }
     }
   });
-  userCartId = getUserCart[0].id;
+
+  userCart = getUserCart[0];
+  userCartId = userCart.id;
 
   // fetch cart items
   cartItems = await context.prisma
@@ -125,23 +145,15 @@ async function createOrder(parent, args, context, info) {
     })
     .$fragment(`{ id product { id price discountedPrice } total quantity }`);
 
-  // get subtotal by mapping over cart items to get each cart item total
-  cartItems.map(cartItem => {
-    subtotal += cartItem.total;
-  });
-
-  shippingFee = Math.random() * 20;
-  shippingFee = Number(shippingFee.toFixed());
-  total = subtotal + shippingFee;
-
   // create order
+  const { shippingFee, subtotal, total } = userCart;
   order = await context.prisma.createOrder({
     owner: {
       connect: {
         id: userId
       }
     },
-    status: "RECIEVED",
+    status: "RECEIVED",
     shippingFee,
     subtotal,
     total

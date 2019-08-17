@@ -180,7 +180,7 @@ async function discountCode(parent, { code }, context) {
 
 async function savedItems(parent, args, context) {
   const userId = getUserId(context);
-  return await context.prisma.savedItems({
+  return await context.prisma.savedItemsConnection({
     where: {
       owner: {
         id: userId

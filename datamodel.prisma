@@ -2,7 +2,7 @@ enum AddressType {
   CUSTOMER
   STAFF
   SHIPPING
-  BILLNG
+  BILLING
 }
 
 enum DiscountCodeType {
@@ -18,7 +18,7 @@ enum Gender {
 }
 
 enum OrderStatus {
-  RECIEVED
+  RECEIVED
   PROCESSING
   ACCEPTED
   IN_TRANSIT
@@ -50,6 +50,9 @@ type Cart {
   id: ID! @id
   owner: User! @relation(link: INLINE)
   items: [CartItem!]!
+  shippingFee: Float! @default(value: 0)
+  subtotal: Float! @default(value: 0)
+  total: Float! @default(value: 0)
   createdAt: DateTime! @createdAt
   updatedAt: DateTime! @updatedAt
 }
