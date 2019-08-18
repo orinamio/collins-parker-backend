@@ -203,10 +203,10 @@ type Product {
   discountedPrice: Float
   brand: Brand
   gender: Gender
-  category: Category!
+  category: Category
   sizes: [Size!]!
   images(first: Int): [Image!]!
-  description: String!
+  description: String
   reviews(first: Int): [Review!]!
   shippingFee: Float
 }
