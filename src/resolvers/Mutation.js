@@ -70,7 +70,8 @@ async function addToCart(parent, args, context, info) {
     newCartSubtotal = userCart.subtotal ? userCart.subtotal : 0;
 
   newCartSubtotal += total;
-  product.shippingFee && (newCartShippingFee += product.shippingFee);
+  product.shippingFee &&
+    (newCartShippingFee += product.shippingFee * args.quantity);
   newCartTotal = newCartSubtotal + newCartShippingFee;
 
   await context.prisma.updateCart({
@@ -84,6 +85,29 @@ async function addToCart(parent, args, context, info) {
     }
   });
 
+  // check if item is in cart already,
+  // if yes - update
+  const cartItemExist = await context.prisma.cartItems({
+    where: {
+      product: {
+        id: args.productId
+      }
+    }
+  });
+
+  if (cartItemExist.length > 0) {
+    return await context.prisma.updateCartItem({
+      data: {
+        quantity: args.quantity + cartItemExist[0].quantity,
+        total: total + cartItemExist[0].total
+      },
+      where: {
+        id: cartItemExist[0].id
+      }
+    });
+  }
+
+  // create cart item
   return await context.prisma.createCartItem({
     quantity: args.quantity,
     total,
@@ -100,18 +124,44 @@ async function addToCart(parent, args, context, info) {
 
 async function removeItemFromCart(parent, args, context, info) {
   const userId = getUserId(context);
-  const user = await context.prisma.user({ id: userId });
-  let cartItem;
 
-  if (!user) {
-    throw new Error("Not authorized");
-  }
+  // get user cart
+  const getUserCart = await context.prisma.carts({
+    where: {
+      owner: {
+        id: userId
+      }
+    }
+  });
 
-  cartItem = await context.prisma.deleteCartItem({ id: args.cartItemId });
+  const userCart = getUserCart[0];
+  const userCartId = userCart.id;
 
-  if (!cartItem) {
-    throw new Error("Couldn't remove item from cart");
-  }
+  // update cart subtotal, total and shippingFee
+  const cartItem = await context.prisma
+    .cartItem({
+      id: args.cartItemId
+    })
+    .$fragment(`{ id product { id shippingFee } total }`);
+  const subtotal = userCart.subtotal - cartItem.total;
+  const shippingFee = userCart.shippingFee - cartItem.product.shippingFee;
+  const total = subtotal + shippingFee;
+
+  await context.prisma.updateCart({
+    data: {
+      subtotal,
+      shippingFee,
+      total
+    },
+    where: {
+      id: userCartId
+    }
+  });
+
+  // remove item from cart
+  await context.prisma.deleteCartItem({
+    id: args.cartItemId
+  });
 
   return {
     success: true
@@ -157,6 +207,18 @@ async function createOrder(parent, args, context, info) {
     shippingFee,
     subtotal,
     total
+  });
+
+  // reset cart data
+  await context.prisma.updateCart({
+    data: {
+      shippingFee: 0,
+      subtotal: 0,
+      total: 0
+    },
+    where: {
+      id: userCartId
+    }
   });
 
   // for each cart item, create an order item and connect the order id to each order item
@@ -252,8 +314,20 @@ async function deleteAddress(parent, args, context, info) {
   return await context.prisma.deleteAddress({ id: args.id });
 }
 
-async function saveItem(parent, args, context, info) {
+async function saveItem(parent, { productId }, context, info) {
   const userId = getUserId(context);
+  const savedItemExist = await context.prisma.savedItems({
+    where: {
+      product: {
+        id: productId
+      }
+    }
+  });
+
+  if (savedItemExist.length > 0) {
+    return savedItemExist[0];
+  }
+
   return await context.prisma.createSavedItem({
     owner: {
       connect: {
@@ -262,7 +336,7 @@ async function saveItem(parent, args, context, info) {
     },
     product: {
       connect: {
-        id: args.productId
+        id: productId
       }
     }
   });
