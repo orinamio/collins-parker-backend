@@ -84,6 +84,9 @@ async function addToCart(parent, args, context, info) {
     where: {
       product: {
         id: args.productId
+      },
+      size: {
+        id: args.sizeId
       }
     }
   });
