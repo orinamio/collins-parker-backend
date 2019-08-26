@@ -43,8 +43,6 @@ async function login(parent, args, context, info) {
 
 async function addToCart(parent, args, context, info) {
   const userId = getUserId(context);
-
-  // get user cart
   const getUserCart = await context.prisma.carts({
     where: {
       owner: {
@@ -52,11 +50,8 @@ async function addToCart(parent, args, context, info) {
       }
     }
   });
-
   const userCart = getUserCart[0];
   const userCartId = userCart.id;
-
-  // get product
   const product = await context.prisma.product({ id: args.productId });
   let total = product.price * args.quantity;
 
@@ -85,8 +80,6 @@ async function addToCart(parent, args, context, info) {
     }
   });
 
-  // check if item is in cart already,
-  // if yes - update
   const cartItemExist = await context.prisma.cartItems({
     where: {
       product: {
@@ -107,25 +100,18 @@ async function addToCart(parent, args, context, info) {
     });
   }
 
-  // create cart item
   return await context.prisma.createCartItem({
     quantity: args.quantity,
     total,
-    cart: {
-      connect: { id: userCartId }
-    },
-    product: {
-      connect: {
-        id: args.productId
-      }
-    }
+    cart: { connect: { id: userCartId } },
+    product: { connect: { id: args.productId } },
+    size: { connect: { id: args.sizeId } }
   });
 }
 
 async function removeItemFromCart(parent, args, context, info) {
   const userId = getUserId(context);
 
-  // get user cart
   const getUserCart = await context.prisma.carts({
     where: {
       owner: {
@@ -158,7 +144,6 @@ async function removeItemFromCart(parent, args, context, info) {
     }
   });
 
-  // remove item from cart
   await context.prisma.deleteCartItem({
     id: args.cartItemId
   });
@@ -172,7 +157,6 @@ async function createOrder(parent, args, context, info) {
   const userId = getUserId(context);
   let getUserCart, userCart, userCartId, cartItems, order;
 
-  // get user cart id
   getUserCart = await context.prisma.carts({
     where: {
       owner: {
@@ -180,11 +164,8 @@ async function createOrder(parent, args, context, info) {
       }
     }
   });
-
   userCart = getUserCart[0];
   userCartId = userCart.id;
-
-  // fetch cart items
   cartItems = await context.prisma
     .cartItems({
       where: {
@@ -195,7 +176,6 @@ async function createOrder(parent, args, context, info) {
     })
     .$fragment(`{ id product { id price discountedPrice } total quantity }`);
 
-  // create order
   const { shippingFee, subtotal, total } = userCart;
   order = await context.prisma.createOrder({
     owner: {
@@ -209,7 +189,6 @@ async function createOrder(parent, args, context, info) {
     total
   });
 
-  // reset cart data
   await context.prisma.updateCart({
     data: {
       shippingFee: 0,
@@ -223,7 +202,6 @@ async function createOrder(parent, args, context, info) {
 
   // for each cart item, create an order item and connect the order id to each order item
   cartItems.map(async cartItem => {
-    // get product
     let price = cartItem.product.price;
 
     if (cartItem.product.discountedPrice)

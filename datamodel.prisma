@@ -61,6 +61,7 @@ type CartItem {
   id: ID! @id
   cart: Cart! @relation(link: INLINE)
   product: Product! @relation(link: INLINE)
+  size: Size! @relation(link: INLINE)
   quantity: Int!
   total: Float!
   createdAt: DateTime! @createdAt
@@ -111,6 +112,7 @@ type OrderItem {
   id: ID! @id
   order: Order @relation(link: INLINE)
   product: Product @relation(link: INLINE)
+  size: Size! @relation(link: INLINE)
   price: Float!
   quantity: Int!
   total: Float!

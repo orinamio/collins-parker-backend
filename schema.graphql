@@ -46,7 +46,7 @@ type Mutation {
     email: String!
     password: String!
   ): AuthPayload
-  addToCart(productId: ID!, quantity: Int!): CartItem
+  addToCart(productId: ID!, sizeId: ID!, quantity: Int!): CartItem
   removeItemFromCart(cartItemId: ID!): SuccessPayload
   createOrder: Order
   cancelOrder(id: ID!): Order
@@ -149,6 +149,7 @@ type CartItem {
   id: ID!
   cart: Cart!
   product: Product!
+  size: Size!
   quantity: Int!
   total: Float!
 }
@@ -179,7 +180,7 @@ type Order {
   id: ID!
   owner: User!
   items: [OrderItem!]!
-  status: OrderStatus
+  status: OrderStatus!
   cancelled: Boolean!
   shippingFee: Float!
   subtotal: Float!
@@ -188,8 +189,9 @@ type Order {
 
 type OrderItem {
   id: ID!
-  order: Order
-  product: Product
+  order: Order!
+  product: Product!
+  size: Size!
   price: Float!
   quantity: Int!
   total: Float!

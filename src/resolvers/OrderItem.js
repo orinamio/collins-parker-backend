@@ -12,5 +12,12 @@ module.exports = {
         id: parent.id
       })
       .product();
+  },
+  async size({ id }, args, context) {
+    return await context.prisma
+      .cartItem({
+        id
+      })
+      .size();
   }
 };

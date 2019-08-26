@@ -12,7 +12,6 @@
   "private": true,
   "dependencies": {
     "bcryptjs": "^2.4.3",
-    "graphql-shield": "^6.0.4",
     "graphql-yoga": "^1.18.0",
     "jsonwebtoken": "^8.5.1",
     "nodemon": "^1.19.1",
