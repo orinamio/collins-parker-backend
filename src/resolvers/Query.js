@@ -200,6 +200,10 @@ async function orders(parent, args, context) {
   });
 }
 
+async function sizes(parent, args, context) {
+  return await context.prisma.sizes();
+}
+
 module.exports = {
   categories,
   cart,
@@ -211,5 +215,7 @@ module.exports = {
   product,
   promoCodes,
   discountCode,
-  savedItems
+  savedItems,
+  orders,
+  sizes
 };

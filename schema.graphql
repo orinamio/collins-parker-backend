@@ -36,6 +36,7 @@ type Query {
   discountCode(code: String!): DiscountCode
   savedItems: SavedItemConnection
   orders: [Order!]!
+  sizes: [Size!]!
 }
 
 type Mutation {
