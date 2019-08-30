@@ -1,6 +1,6 @@
 type Query {
   categories: [Category!]!
-  cart: Cart
+  cart: CartType
   user(id: ID): User
   search(
     searchString: String!
@@ -146,6 +146,11 @@ type Cart {
   total: Float
 }
 
+type CartType {
+  cart: Cart
+  count: Int
+}
+
 type CartItem {
   id: ID!
   cart: Cart!
@@ -153,6 +158,16 @@ type CartItem {
   size: Size!
   quantity: Int!
   total: Float!
+}
+
+type CartItemConnection {
+  pageInfo: PageInfo!
+  edges: [CartItemEdge]!
+}
+
+type CartItemEdge {
+  node: Cart!
+  cursor: String!
 }
 
 type Category {

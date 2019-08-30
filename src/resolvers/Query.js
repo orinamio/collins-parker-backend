@@ -6,14 +6,26 @@ async function categories(parent, args, context) {
 
 async function cart(parent, args, context) {
   const userId = getUserId(context);
-  const cartArray = await context.prisma.carts({
+  const userCart = await context.prisma.carts({
     where: {
       owner: {
         id: args.id || userId
       }
     }
   });
-  return cartArray[0];
+
+  const cartItemsCount = await context.prisma.cartItems({
+    where: {
+      cart: {
+        id: userCart[0].id
+      }
+    }
+  });
+
+  return {
+    cart: userCart[0],
+    count: cartItemsCount.length
+  };
 }
 
 async function user(parent, args, context) {
